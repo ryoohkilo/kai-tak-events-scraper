@@ -5,9 +5,18 @@ from selenium.webdriver.common.by import By
 import time
 import re
 import json
+from selenium.webdriver.chrome.options import Options
 
 # 1. Scrape main event page for event links and basic info
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+chrome_options = Options()
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--headless=new')
+chrome_options.add_argument('--user-data-dir=/tmp/chrome-user-data')  # Unique dir to avoid conflicts
+chrome_options.add_argument('--disable-gpu')
+chrome_options.add_argument('--remote-debugging-port=9222')
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 driver.get("https://www.kaitaksportspark.com.hk/tc/event")
 time.sleep(15)
 
@@ -37,7 +46,7 @@ print(f"Saved {len(events)} basic events to latest_events.json")
 
 # 2. Visit each event page for deeper info
 detailed_events = []
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 for event in events:
     driver.get(event["link"])

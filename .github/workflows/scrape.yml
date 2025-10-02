@@ -1,7 +1,7 @@
 name: Scrape Kai Tak Events
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC (adjust for HKT)
+    - cron: '0 0 * * *'  # Daily at midnight UTC (adjust for HKT: '0 16 * * *')
   workflow_dispatch:  # Manual trigger
 jobs:
   scrape:
@@ -15,6 +15,10 @@ jobs:
       - name: Install deps
         run: |
           pip install selenium webdriver-manager
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
       - name: Run scraper
         run: python selenium_events.py
       - name: Commit JSON

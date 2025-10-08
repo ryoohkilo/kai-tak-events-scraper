@@ -1,0 +1,30 @@
+name: Scrape Kai Tak Events
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC (adjust for HKT: '0 16 * * *')
+  workflow_dispatch:  # Manual trigger
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: |
+          pip install selenium webdriver-manager
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+      - name: Run scraper
+        run: python selenium_events.py
+      - name: Commit JSON
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add total_events.json
+          git diff --staged --quiet || git commit -m "Update events $(date)"
+          git push
